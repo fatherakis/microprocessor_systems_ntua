@@ -1,0 +1,26 @@
+IN 10H ;remove mem protection
+LXI B,01F4H ;insert delay number (500ms)
+MVI L,01H   ;Start from 1
+Initial: LDA 2000H ;load switches
+MOV D,A ;Save before manupilation
+RRC     
+JNC Initial ;if lsb is 0 wait for reactivation
+CALL DELB   ; delay
+MOV A,D     ; recover unshifted value
+RLC
+JC right    ;if msb is 1 right to left cycle
+left: MOV A,L	 ;fetch state
+CMA		;flip
+STA  3000H	;show on leds
+MOV A,L	;reflip
+RLC		;shifting to left goes 1->2->3 ... 
+MOV L,A	;save as new state
+JMP Initial
+right: MOV A,L ;fetch 
+CMA
+STA 3000H 	 ;show
+MOV A,L	
+RRC		 ;shifting to right goes 1->7->6->5->4->3->2 ...
+MOV L,A	 ;save
+JMP Initial
+END

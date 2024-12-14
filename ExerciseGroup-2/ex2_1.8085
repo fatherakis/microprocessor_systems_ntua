@@ -1,0 +1,63 @@
+IN 10H
+MVI E,00H
+LXI H,0900H
+Rep: MOV M,E
+INR E
+INX H
+MOV A,E
+CPI FFH
+JNZ Rep
+MOV M,E
+JMP PartII
+
+PartII: MVI B,00H
+MVI C,00H
+MVI E,00H
+LXI H,08FFH
+S_Rep: INX H
+MOV A,M
+CPI FFH
+CNZ count_ones
+JNZ S_Rep
+CALL count_ones
+JMP PartIII
+
+count_ones: RAR
+CC inc_BC
+RAR 
+CC inc_BC 
+RAR
+CC inc_BC
+RAR
+CC inc_BC
+RAR 
+CC inc_BC
+RAR
+CC inc_BC
+RAR
+CC inc_BC
+RAR
+CC inc_BC
+RET     
+       ;ended function
+inc_BC: INX B
+RET
+
+increment: INR D
+JMP Repeat
+RET
+
+increment2: INR D
+RET
+
+PartIII: MVI D,00H
+LXI H,08FFH
+Repeat: INX H
+MOV A,M
+CPI 10H
+JC Repeat
+CPI 60H
+CC increment
+CZ increment2
+END
+

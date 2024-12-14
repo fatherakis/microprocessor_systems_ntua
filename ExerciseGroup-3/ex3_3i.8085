@@ -1,0 +1,43 @@
+PUSH PSW ;Push A and Flag to the stack
+PUSH D ;Push double register DE to stack
+MOV D,H
+MOV E,L 
+LDAX B ;Load address 
+RLC ;Rotate left 4 times so that the 4 MSB switch places with the 4 LSB
+RLC 
+RLC 
+RLC 
+STAX D ;Store to address
+POP D ;Recover from stack
+MOV A,B ;Move register
+RLC ;Rotate left 4 times so that the 4 MSB switch places with the 4 LSB
+RLC 
+RLC 
+RLC 
+MOV B,A ;Move back the register
+MOV A,D ;Move register
+RLC ;Rotate left 4 times so that the 4 MSB switch places with the 4 LSB
+RLC 
+RLC 
+RLC 
+MOV D,A ;Move back the register
+MOV A,E ;Move register
+RLC ;Rotate left 4 times so that the 4 MSB switch places with the 4 LSB
+RLC 
+RLC 
+RLC 
+MOV E,A ;Move back the register
+MOV A,H ;Move register
+RLC ;Rotate left 4 times so that the 4 MSB switch places with the 4 LSB
+RLC 
+RLC 
+RLC 
+MOV H,A ;Move back the register
+MOV A,L ;Move register
+RLC ;Rotate left 4 times so that the 4 MSB switch places with the 4 LSB
+RLC 
+RLC 
+RLC 
+MOV L,A ;Move back the register
+POP PSW
+END

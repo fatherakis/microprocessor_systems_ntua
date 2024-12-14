@@ -1,0 +1,59 @@
+IN 10H
+LXI B,03E8H ;used for 1s delay
+MVI A,10H ;empty  disp segments
+STA 0B04H
+STA 0B00H
+STA 0B01H
+STA 0B05H
+
+START:
+MVI A,0DH ;interrupt mask to allow rst 6.5
+SIM
+EI ;enable interrupts
+
+WAIT: JMP WAIT
+
+INTR_ROUTINE:
+POP H ;reduce stack
+MVI D,3CH ;60 seconds
+EI ;enable interrupts to allow timer renewing
+
+LIGHT_COUNT:
+MOV A,D
+CPI 00H
+JZ END_ME
+MVI A,00H
+STA 3000H
+MOV A,D ;seconds remaining
+MVI E,00H
+
+counter:
+CPI 0AH
+JC display
+SUI 0AH
+INR E
+JMP counter
+
+display:
+STA 0B02H ;print ones in middle no.2 7-segment display
+
+MOV A,E
+STA 0B03H ;print tens in middle no.1 7-segment display
+
+Continue: 
+CALL DELB
+DCR D
+
+PUSH D ;store DE
+LXI D,0B00H ;used for STDM
+CALL STDM
+CALL DCD
+LXI B,03E8H ;restore 1s delay
+POP D ;restore DE
+JMP LIGHT_COUNT
+
+END_ME:
+MVI A,FFH
+STA 3000H
+JMP START
+END

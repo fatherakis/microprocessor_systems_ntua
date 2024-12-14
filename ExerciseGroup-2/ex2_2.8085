@@ -1,0 +1,42 @@
+IN 10H ; remove mem protection
+LXI B,0064H ; insert delay number (100ms)
+MVI L,00H ; L holds the LEDs we want to enable
+
+Zero_stopped: MOV A,L ;Closing lights
+CMA ;flip
+STA 3000H ;Storing LEDs to addresses
+LDA 2000H	;load switches
+RLC
+JNC Zero_stopped ;if msb is 0 wait for activation
+
+One_stopped: MOV A,L ;Closing lights
+CMA ;flip
+STA 3000H ; Storing LEDs to addresses
+LDA 2000H ;load switches
+RLC
+JC One_stopped ;if the MSB is still on we continue waiting
+MVI D,C8H ; store 200 repetitions on register D
+MOV A,L 
+STA 3000H ; Open LEDs
+
+Zero_going: MOV A,D 
+CPI 00H
+JZ Zero_stopped ;if counter = 0 close lights
+CALL DELB ; delay
+DCR D	     ; Decrease counter by 1
+LDA 2000H ; check if any new input
+RLC
+JC One_going ;if MSB is on jump to one_going 
+JMP Zero_going ;else continue this loop
+
+One_going: MOV A,D 
+CPI 00H
+JZ One_stopped ;if counter = 0 close lights
+CALL DELB 	; delay
+DCR D		; Decrease counter by 1
+LDA 2000H
+RLC
+JC One_going ;if MSB is on jump to one_going 
+MVI D,C8H ; store 200 repetitions on register D
+JMP Zero_going
+END

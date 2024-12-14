@@ -1,0 +1,80 @@
+IN 10H ;remove memory protection
+MVI H,00H
+MVI L,00H
+LXI B,0040H ;insert 64 to register B
+
+z_waiting:
+LDA 0020H
+RLC
+JC one_waiting ;Continue waiting if MSB = 0
+JMP z_waiting ;Jump to one_waiting if MSB = 1
+one_waiting:
+LDA 0020H
+RLC
+JC one_waiting ;Continue waiting if MSB = 1
+JMP my_rout ;Jump to main program if MSB = 0
+
+
+
+my_rout: DCR B
+MOV A,B
+RRC ;rotate right for CY=LSB
+JC inp_lsb ;if B is odd input LSB digits else MSB
+
+inp_msb: LDA 0020H
+ANI 0FH ;Keep registers X0-X4
+RLC ;Rotate left 4 times (since MSB)
+RLC
+RLC
+RLC
+ADD D ;add LSB
+ADD L ;adding it to the sum
+MOV L,A ;Storing result of L
+MVI A,00H 
+ADC A ;Adding with carry (essentialy since A=0 => A=carry)
+ADD H ;Adding it to the MSB (bits > 8) of the sum
+MOV H,A ;Storing result
+MOV A,B
+CPI 00H ;if B = 0 calculate average
+JZ find_avg 
+JMP z_waiting ;else keep going
+
+inp_lsb: LDA 0020H
+ANI 0FH ;Keep registers X0-X4
+MOV D,A ;Register D holds the number
+JMP z_waiting ;Keep going
+
+find_avg: MOV A,H ;To divide by 32 we need to shift right  
+RRC 		    ;5 times the sum (2^5)
+MOV H,A
+MOV A,L 
+RAR  ;RAR so that CY(LSB from the higher value nr) goes to MSB
+MOV L,A
+MOV A,H ; / 4  
+RRC  
+MOV H,A
+MOV A,L 
+RAR
+MOV L,A
+MOV A,H ; / 8  
+RRC  
+MOV H,A
+MOV A,L 
+RAR
+MOV L,A
+MOV A,H ; / 16 
+RRC  
+MOV H,A
+MOV A,L 
+RAR
+MOV L,A
+MOV A,H ; / 32  
+RRC  
+MOV H,A
+MOV A,L 
+RAR
+MOV L,A
+MVI A,00H
+ADC A ;Adding carry to A (rounding)
+ADD L ;Adding L
+END

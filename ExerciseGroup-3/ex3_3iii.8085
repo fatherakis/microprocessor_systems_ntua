@@ -1,0 +1,11 @@
+my_loop: DCR n ;Decrease n
+MOV A,H
+RAR ;Rotating right H (Now CY contains LSB of H)
+MOV H,A ;Returning to place
+MOV A,L
+RAR ;Rotating right L (Now CY contains LSB of L)
+MOV L,A ;Returning to place
+MOV A,n
+CPI 00H 
+JNZ my_loop ;if n!=0 continue
+END

@@ -1,0 +1,11 @@
+START: MVI C,08H ;
+LDA 2000H ;reads switches
+B: RAL ;left shift
+JC A ;if MSB is 1 show 8
+DCR C
+JNZ  B
+A: MOV A,C
+CMA ;led inverse logic
+STA 3000H ;show to led's
+JMP START
+END

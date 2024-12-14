@@ -1,0 +1,16 @@
+PUSH PSW
+Loop_: DCR X
+MOV A,K ;Moving K to A
+STAX R ;Storing A at address RP
+INC P ;next address
+MOV A,P
+CPI 00H ;if P=0, Z=1 
+JZ incr ;if Z=1 increment R
+Cont: MOV A,X
+CPI 00H ;if X=0, Z=1 
+JZ end ;if X=0 end
+JMP Loop_
+incr: INC R ;incrementing R
+JMP Cont ;jumping back
+end: POP PSW ;Reapplying beginning values
+END

@@ -1,0 +1,100 @@
+IN 10H
+START:
+LDA 2000H
+;---------SPLITING DIP's-------------
+ANI 0FH
+MOV C,A  ;Num 2  is on C
+LDA 2000H
+ANI F0H
+RRC
+RRC
+RRC
+RRC
+MOV B,A  ;Num 1 is on B
+;------------------------------------
+;------ AND for RES(3)---------------
+;---MSB split of 2nd---
+MOV A,C
+RRC
+RRC
+RRC
+ANI 01H
+MOV E,A
+;---MSB split of 1st---
+MOV A,B
+RRC
+RRC
+RRC
+ANI 01H
+MOV D,A
+;---MSB Splitted---
+
+MOV A,D
+ANA E       ;and gate
+MOV L,A
+RLC
+RLC
+RLC
+MOV H,A
+;---SAVED OUT(4) ON H----
+;---Starting OUT(3) -----
+;---Break the 2nd MSB of 2nd num---
+MOV A,C
+RRC
+RRC
+ANI 01H
+MOV E,A
+;---Break the 2nd MSB of 1st num---
+MOV A,B
+RRC
+RRC
+ANI 01H
+MOV D,A
+;---2nd MSB splitted----
+MOV A,D
+ANA E
+ORA L
+RLC
+RLC
+ADD H
+MOV H,A
+;----2nd SET OF NUMS HAVE BEEN COMPUTED-------
+;----2 more numbers to go --  OUT(1)  OUT(0)---------
+;---Break the 3rd MSB of 2nd num-----
+MOV A,C
+RRC
+ANI 01H
+MOV E,A
+;---Break the 3rd MSB of 1st num-----
+MOV A,B
+RRC
+ANI 01H
+MOV D,A
+;----3rd MSB splitted----
+MOV A,D
+XRA E
+MOV L,A
+RLC
+ADD H
+MOV H,A
+;----3rd SET OF NUMS HAVE BEEN COMPUTED--------
+;----ONLY THE LSB TO GO----------
+;-----Break of LSB of 2nd num------------
+MOV A,C
+ANI 01H
+MOV E,A
+;-----Break of LSB of 1st num------------
+MOV A,B
+ANI 01H
+MOV D,A
+;------LSB has been splitted----------
+MOV A,D
+XRA E
+XRA L
+ADD H
+MOV H,A
+MOV A,H
+CMA
+STA 3000H
+JMP START
+END

@@ -1,0 +1,41 @@
+LXI B,01F4H    ;load the delay num (500ms)
+Initial: LDA 2000H  ;
+CPI 64H  ;compare if A is < 99
+JNC over99 ;if its >99
+MVI D,00H ;number of decimals (10, 20, 30...)
+DCR D     ; make -1 so loop can function
+msb: INR D ;if back here add 1
+SUI 0AH  
+JNC msb 	;if not negative redo (to find dec)
+ADI 0AH 	;recover value
+MOV E,A	;save remainder
+MOV A,D	;load decimals and shift 4times to put them correctly as shown(0000 0010 -> 0010 0000)
+RLC	
+RLC
+RLC
+RLC
+ADD E		;Add the remainder
+CMA 
+STA 3000H     ;show decimal value on leds
+JMP Initial   ;redo
+over99: CPI C8H  ;compare if A is <199
+JNC over199
+MVI A,0FH	   ;load 15 (0000 1111) lsb blink
+CMA
+STA 3000H	   ;turn leds on
+CALL DELB	   ;wait
+MVI A,00H	   ;load 0 (aka off)
+CMA
+STA 3000H	   ;turn leds off
+CALL DELB	   ;wait
+JMP Initial
+over199: MVI A,F0H  ;load 240 (1111 0000) msb blink
+CMA
+STA 3000H	   ;turn on led
+CALL DELB	   ;wait
+MVI A,00H
+CMA
+STA 3000H	   ;turn off
+CALL DELB	   ;wait
+JMP Initial
+END
