@@ -1,4 +1,4 @@
-### Microcomputer Systems - NTUA Class 2021
+### Microcomputer Systems - ECE NTUA Course 2021
 
 Lab exercises were split in 5 groups and completed as 2-person colaboration teams.
 * Exception on 4th AVR Lab where groups of 3 were formed.
